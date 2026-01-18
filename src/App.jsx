@@ -1,11 +1,13 @@
-import React, { useEffect } from "react";
-import Home from "./pages/Home/Home";
+import React, { useEffect, lazy, Suspense } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
-import Login from "./pages/Login/Login";
-import Player from "./pages/Player/Player";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import { ToastContainer, toast } from "react-toastify";
+
+// Lazy load pages for code splitting
+const Home = lazy(() => import("./pages/Home/Home"));
+const Login = lazy(() => import("./pages/Login/Login"));
+const Player = lazy(() => import("./pages/Player/Player"));
 
 const App = () => {
   const navigate = useNavigate();
@@ -25,11 +27,13 @@ const App = () => {
   return (
     <div>
       <ToastContainer theme="dark" />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/player/:id" element={<Player />} />
-      </Routes>
+      <Suspense fallback={<div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/player/:id" element={<Player />} />
+        </Routes>
+      </Suspense>
     </div>
   );
 };
